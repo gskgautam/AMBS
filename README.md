@@ -62,6 +62,3 @@ Requirements (Python 3.10+ recommended):
 - pytorch, pytorch‑lightning, huggingface
 
 ---
-
-### Acknowledgements
-
