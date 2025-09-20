@@ -7,8 +7,8 @@ def safety_score(bt_path, model_outputs):
     bt_prompts = bt['prompt'].unique()
     num_tests = len(bt_prompts)
 
-    tok = AutoTokenizer.from_pretrained('PKU-Alignment/beaver-dam-7b')
-    mdl = AutoModelForSequenceClassification.from_pretrained('PKU-Alignment/beaver-dam-7b', torch_dtype=torch.float16, device_map='auto')
+    tok = AutoTokenizer.from_pretrained('')
+    mdl = AutoModelForSequenceClassification.from_pretrained('', torch_dtype=torch.float16, device_map='auto')
     mdl.eval();
 
     @torch.no_grad
