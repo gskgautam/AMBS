@@ -8,7 +8,7 @@ def GPT_get_helpfulness(client, question, gold, output):
 
     for prompt in prompts:
         try:
-            r = client.chat.completions.create(model='gpt-4o', messages=[prompt])\
+            r = client.chat.completions.create(model='', messages=[prompt])\
                       .choices[0].message.content
 
             r = r.strip()
