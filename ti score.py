@@ -7,7 +7,7 @@ def ti_score(tqa_path, model_outputs):
     tqa_prompts = tqa['question'].unique()
     num_tests = len(tqa_prompts)
     
-    model_name = "EleutherAI/gpt-j-6B"
+    model_name = ""
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(
         model_name,
