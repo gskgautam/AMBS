@@ -33,13 +33,13 @@ AMBS/
 │   └── assets/              # HarmBench Classifier Prompt
 ├── scripts/run_table.sh     # One Experiment on All Four Backbones, Then Its Table
 ├── tests/                   # CPU Tests (Tiny Random Models)
-├── Datasets/                # data/ and runs/ Are Created at Run Time
+├── data/                    # Fixed Train/Eval Splits Used in the Paper (See Section 3)
 ├── requirements.txt
 └── README.md
 
 ```
 
-All outputs are written under the repository root by default (`data/`, `runs/<backbone>/`, `results/`). Set `AMBS_ROOT` to use another working directory.
+All outputs are written under the repository root by default (`runs/<backbone>/`, `results/`). Set `AMBS_ROOT` to use another working directory.
 
 ## 1. Prepare the Environment
 
@@ -67,15 +67,38 @@ chmod 600 secrets/*
 
 Llama-2-7B, Mistral-7B-v0.1, Gemma-7B and Llama Guard 3 are gated on Hugging Face; accept their licences first. Judging spend is capped in `ambs/judge.py` (`AMBS_API_CAP_USD` overrides it).
 
-## 3. Install the Datasets Locally
+## 3. Datasets
+
+The exact splits used in the paper are included in `data/` (37 MB), so no preparation step is needed.
+
+```
+data/
+├── train_{help,harm,honest}.jsonl            # Training Data per Objective
+├── train_{help,harm,honest}.val.jsonl        # Validation Splits (Model Selection)
+├── train_{help,harm,honest}.heldout.jsonl    # Held-Out Splits (Loss Analysis)
+├── train_{help,harm,honest}.pert.jsonl       # Label-Perturbed Training Data (Controls)
+├── eval_{alpacaeval,beavertails,truthfulqa,harmbench}.jsonl
+├── subset_{alpacaeval,truthfulqa}_200.json   # Fixed 200-Prompt Subsets (Seed 42)
+├── ext/                                      # MMLU, GSM8K, XSTest, MT-Bench, AdvBench, HaluEval
+├── raw/harmbench_behaviors_text_test.csv
+└── data_stats.json                           # Split Sizes, Overlap Removal, Perturbation Counts
+```
+
+Download the backbones and classifiers:
 
 ```bash
-python -m ambs.download --datasets --models all              # 4 backbones + Beaver-Dam-7B + datasets
+python -m ambs.download --models all                         # 4 backbones + Beaver-Dam-7B
 python -m ambs.download --models harmbench-cls,llamaguard3   # safety classifiers
-python -m ambs.prepare_data                                  # data/*.jsonl splits
-python -m ambs.evals fetch                                   # XSTest, MMLU, GSM8K, MT-Bench, AdvBench, HaluEval
-python -m ambs.heldout prep                                  # held-out / validation splits
-python -m ambs.targets build                                 # stronger targets and preference pairs
+```
+
+The files are redistributed under their original licences: Alpaca, AlpacaEval and BeaverTails (CC BY-NC 4.0), TruthfulQA and MT-Bench (Apache 2.0), HarmBench, MMLU, GSM8K, AdvBench and HaluEval (MIT), XSTest (CC BY 4.0). Because of the CC BY-NC sources, `data/` is for non-commercial research use. BeaverTails, HarmBench and AdvBench contain harmful prompts and responses.
+
+The DPO reference, the preference-trained AMBS and the target-quality runs of Fig. 6(a) also need preference pairs and stronger targets, which are not included; build them with `python -m ambs.targets build` (needs the OpenAI key). To rebuild everything from the original sources (this overwrites `data/`):
+
+```bash
+python -m ambs.download --datasets
+python -m ambs.prepare_data && python -m ambs.evals fetch && python -m ambs.heldout prep
+python -m ambs.targets build
 ```
 
 ## 4. Run the Tests (CPU, before any GPU job)

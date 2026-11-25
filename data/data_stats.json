@@ -1,0 +1,38 @@
+{
+  "alpacaeval": {
+    "n": 805,
+    "reference_generator": [
+      "text_davinci_003"
+    ]
+  },
+  "alpaca_train": {
+    "source_n": 52002,
+    "dropped_overlap_or_empty": 28,
+    "n": 20000
+  },
+  "beavertails": {
+    "test_n": 3021,
+    "test_unique_prompts": 2525,
+    "train_source_n": 27186,
+    "train_is_safe_n": 11604,
+    "train_after_overlap_drop_n": 8142
+  },
+  "truthfulqa": {
+    "questions": 817,
+    "train_questions": 408,
+    "test_questions": 409,
+    "train_rows": 408
+  },
+  "perturbation": {
+    "beavertails_rows": 19034,
+    "beavertails_flips": 932,
+    "harm_rows": 8288,
+    "truthfulqa_flips": 18,
+    "honest_rows": 408
+  },
+  "harmbench": {
+    "n": 240,
+    "standard": 159,
+    "contextual": 81
+  }
+}

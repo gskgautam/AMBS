@@ -5,7 +5,6 @@ secrets/
 hf_token
 .env
 # data, models and outputs
-data/
 runs/
 results/
 hf_home/
