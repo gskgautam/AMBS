@@ -1,0 +1,25 @@
+# secrets (never commit)
+secrets/
+*.key
+*_key
+hf_token
+.env
+# data, models and outputs
+data/
+runs/
+results/
+hf_home/
+judge_cache/
+locks/
+api_spend.json*
+*.pt
+*.npy
+*.safetensors
+*.xlsx
+# environments and caches
+env/
+.venv/
+__pycache__/
+*.pyc
+*.tmp
+.DS_Store
