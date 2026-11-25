@@ -93,7 +93,9 @@ python -m ambs.download --models harmbench-cls,llamaguard3   # safety classifier
 
 The files are redistributed under their original licences: Alpaca, AlpacaEval and BeaverTails (CC BY-NC 4.0), TruthfulQA and MT-Bench (Apache 2.0), HarmBench, MMLU, GSM8K, AdvBench and HaluEval (MIT), XSTest (CC BY 4.0). Because of the CC BY-NC sources, `data/` is for non-commercial research use. BeaverTails, HarmBench and AdvBench contain harmful prompts and responses.
 
-The DPO reference, the preference-trained AMBS and the target-quality runs of Fig. 6(a) also need preference pairs and stronger targets, which are not included; build them with `python -m ambs.targets build` (needs the OpenAI key). To rebuild everything from the original sources (this overwrites `data/`):
+> **Note.** The preference pairs (`pairs_{help,harm,honest}.jsonl`) and the stronger GPT-4o targets (`train_*.strong.jsonl`) are not included in `data/`. The DPO reference (Fig. 3(a)), the preference-trained AMBS and the target-quality runs (Fig. 6(a)) need them, so build them first with `python -m ambs.targets build`, which calls the OpenAI API and needs `secrets/openai_key`.
+
+To rebuild everything from the original sources (this overwrites `data/`):
 
 ```bash
 python -m ambs.download --datasets
@@ -150,7 +152,7 @@ Every verdict is cached per item (`judge_items.json`), so scores can be re-deriv
 
 | Panel | Experiments (`--exp`) | Table builder |
 |---|---|---|
-| (a) S_HHH and compute | `table1`, `mech`, `rep`, `rep2`, `baselines` | `python -m ambs.tables --exp table1`, `python -m ambs.extra mech` |
+| (a) S_HHH and compute | `table1`, `mech`, `rep`, `rep2`, `baselines` (DPO needs `python -m ambs.targets build` first) | `python -m ambs.tables --exp table1`, `python -m ambs.extra mech` |
 | (b) Older steering methods | `rep` | `python -m ambs.extra rep` |
 | (c) Efficiency | `efficiency` | `python -m ambs.extra bench --backbone llama2-7b`, `python -m ambs.extra efficiency` |
 | (d) Paired significance | `table1` | `python -m ambs.extra significance` |
@@ -180,6 +182,8 @@ Every verdict is cached per item (`judge_items.json`), so scores can be re-deriv
 | Ablations and sweeps | `table6`, `figure3` | `python -m ambs.tables --exp table6`, `python -m ambs.tables --exp figure3` |
 
 ## 10. Reproduce Fig. 6 
+
+Run `python -m ambs.targets build` before panel (a) (see the note in Section 3).
 
 | Panel | Experiments (`--exp`) | Table builder |
 |---|---|---|
