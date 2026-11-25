@@ -1,51 +1,41 @@
 # A Controlled Study of Objective-Specific Readout Steering for Multi-Objective LLM Alignment
 
-This repository contains the code to reproduce every figure and table of the paper. AMBS attaches N = 3
-objective-specific offsets (helpfulness, harmlessness, honesty) to the final readout of a frozen backbone, couples
-them with a pairwise penalty, and pools them with fixed weights at inference. The study compares AMBS and its
-input-conditioned variant (AMBS-IC) with a single affine map of equal rank (SA), a direct-vector control (DV), older
-steering methods (CAA, ITI, LoReFT), recent multi-objective steering methods (MAT-Steer, K-Steering, MSRS, Spillover)
-and matched LoRA-SFT and DPO references.
-
 ## Repository Map
 
-```
 AMBS/
-├── ambs/                    # all code (run as `python -m ambs.<module>`)
-│   ├── common.py            # paths, backbones, prompt template, constants
-│   ├── download.py          # backbones, classifiers and raw datasets
-│   ├── prepare_data.py      # train/eval splits, label perturbation, HarmBench test cases
-│   ├── cache.py             # frozen-backbone readout states (computed once per backbone)
-│   ├── model.py             # AMBS, AMBS-IC, SA, DV and every ablation variant; generation hooks
-│   ├── train.py             # readout training (parallel, sequential, shared-label, pooled schemes)
-│   ├── train_layer.py       # offsets at an intermediate layer
-│   ├── generate.py          # decoding: base, single pathway, separate, pooled joint
-│   ├── judge.py             # GPT-4o / Claude judging (WR, TI_prod), Batch API, spending cap
+├── ambs/                    # All Code (Run as `python -m ambs.<module>`)
+│   ├── common.py            # Paths, Backbones, Prompt Template, Constants
+│   ├── download.py          # Backbones, Classifiers and Raw Datasets
+│   ├── prepare_data.py      # Train/Eval Splits, Label Perturbation, HarmBench Test Cases
+│   ├── cache.py             # Frozen-Backbone Readout States (Computed Once per Backbone)
+│   ├── model.py             # AMBS, AMBS-IC, SA, DV and Every Ablation Variant; Generation Hooks
+│   ├── train.py             # Readout Training (Parallel, Sequential, Shared-Label, Pooled Schemes)
+│   ├── train_layer.py       # Offsets at an Intermediate Layer
+│   ├── generate.py          # Decoding: Base, Single Pathway, Separate, Pooled Joint
+│   ├── judge.py             # GPT-4o / Claude Judging (WR, TI_prod), Batch API, Spending Cap
 │   ├── safety.py            # Beaver-Dam-7B (SS) and Llama Guard 3
-│   ├── harmbench.py         # HarmBench ASR with the official classifier
-│   ├── baselines.py         # matched CAA, LoRA-SFT and DPO
-│   ├── repbase.py           # CAA (tuned), ITI, LoReFT, MAT-Steer, K-Steering, MSRS, Spillover
-│   ├── targets.py           # supervision-target quality (stronger and self-distilled targets)
-│   ├── pref.py              # preference-trained AMBS
-│   ├── evals.py             # on-topic safety, capability, OOD and deployment checks
-│   ├── heldout.py           # held-out and validation loss
-│   ├── gradconf.py          # gradient conflict between pathways
-│   ├── human_eval.py        # human audit: sample selection, rater workbooks, agreement
-│   ├── handoff.py           # optional job hand-off for PBS clusters (no-op on a local machine)
-│   ├── experiments.py       # experiment name -> runs (stages: gpu, judge, list)
-│   ├── tables.py            # core result tables
-│   ├── extra.py             # analysis tables (significance, interference, seeds, controllability, ...)
-│   ├── freeanal.py          # analyses without GPU or API calls (geometry, depth CIs, length/refusal)
-│   └── assets/              # HarmBench classifier prompt
-├── scripts/run_table.sh     # one experiment on all four backbones, then its table
-├── tests/                   # CPU tests (tiny random models)
-├── Datasets/                # placeholder; data/ and runs/ are created at run time
+│   ├── harmbench.py         # HarmBench ASR with the Official Classifier
+│   ├── baselines.py         # Matched CAA, LoRA-SFT and DPO
+│   ├── repbase.py           # CAA (Tuned), ITI, LoReFT, MAT-Steer, K-Steering, MSRS, Spillover
+│   ├── targets.py           # Supervision-Target Quality (Stronger and Self-Distilled Targets)
+│   ├── pref.py              # Preference-Trained AMBS
+│   ├── evals.py             # On-Topic Safety, Capability, OOD and Deployment Checks
+│   ├── heldout.py           # Held-Out and Validation Loss
+│   ├── gradconf.py          # Gradient Conflict Between Pathways
+│   ├── human_eval.py        # Human Audit: Sample Selection, Rater Workbooks, Agreement
+│   ├── handoff.py           # Optional Job Hand-Off for PBS Clusters (No-Op on a Local Machine)
+│   ├── experiments.py       # Experiment Name -> Runs (Stages: GPU, Judge, List)
+│   ├── tables.py            # Core Result Tables
+│   ├── extra.py             # Analysis Tables (Significance, Interference, Seeds, Controllability, ...)
+│   ├── freeanal.py          # Analyses Without GPU or API Calls (Geometry, Depth CIs, Length/Refusal)
+│   └── assets/              # HarmBench Classifier Prompt
+├── scripts/run_table.sh     # One Experiment on All Four Backbones, Then Its Table
+├── tests/                   # CPU Tests (Tiny Random Models)
+├── Datasets/                # data/ and runs/ Are Created at Run Time
 ├── requirements.txt
 └── README.md
-```
 
-All outputs are written under the repository root by default (`data/`, `runs/<backbone>/`, `results/`). Set
-`AMBS_ROOT` to use another working directory.
+All outputs are written under the repository root by default (`data/`, `runs/<backbone>/`, `results/`). Set `AMBS_ROOT` to use another working directory.
 
 ## 1. Prepare the Environment
 
@@ -57,8 +47,7 @@ pip install -r requirements.txt
 export HF_HOME=$PWD/hf_home
 ```
 
-The experiments used one NVIDIA H200 or A100 (80 GB) per job, FP16 weights (BF16 if a backbone overflows; the switch
-is recorded in `runs/<backbone>/DTYPE`).
+The experiments used one NVIDIA H200 or A100 (80 GB) per job, FP16 weights (BF16 if a backbone overflows; the switch is recorded in `runs/<backbone>/DTYPE`).
 
 ## 2. Add API Keys
 
@@ -72,8 +61,7 @@ printf '%s' "<your Anthropic key>"      > secrets/anthropic_key   # optional: Cl
 chmod 600 secrets/*
 ```
 
-Llama-2-7B, Mistral-7B-v0.1, Gemma-7B and Llama Guard 3 are gated on Hugging Face; accept their licences first.
-Judging spend is capped in `ambs/judge.py` (`AMBS_API_CAP_USD` overrides it).
+Llama-2-7B, Mistral-7B-v0.1, Gemma-7B and Llama Guard 3 are gated on Hugging Face; accept their licences first. Judging spend is capped in `ambs/judge.py` (`AMBS_API_CAP_USD` overrides it).
 
 ## 3. Install the Datasets Locally
 
@@ -85,13 +73,6 @@ python -m ambs.evals fetch                                   # XSTest, MMLU, GSM
 python -m ambs.heldout prep                                  # held-out / validation splits
 python -m ambs.targets build                                 # stronger targets and preference pairs
 ```
-
-| Objective | Training data | Evaluation |
-|---|---|---|
-| Helpfulness | Alpaca | AlpacaEval (805 prompts), WR vs text-davinci-003 references |
-| Harmlessness | BeaverTails | BeaverTails 30k_test (3,021 prompts), Safe = 100 − SS (Beaver-Dam-7B) |
-| Honesty | TruthfulQA (split by question) | TruthfulQA (409 questions), TI_prod |
-| Adversarial safety | - | HarmBench, ASR (official classifier) |
 
 ## 4. Run the Tests (CPU, before any GPU job)
 
@@ -138,7 +119,7 @@ python -m ambs.cache --backbone llama2-7b
 
 Every verdict is cached per item (`judge_items.json`), so scores can be re-derived without new API calls.
 
-## 7. Reproduce Fig. 3 (Main Results)
+## 7. Reproduce Fig. 3 
 
 | Panel | Experiments (`--exp`) | Table builder |
 |---|---|---|
@@ -149,7 +130,7 @@ Every verdict is cached per item (`judge_items.json`), so scores can be re-deriv
 | (e) Recent steering methods | `rep2`, `ksfix` | `python -m ambs.extra rep` |
 | (f) Seeds | `table2`, `seeds`, `rep2seeds` | `python -m ambs.tables --exp table2`, `python -m ambs.extra seeds` |
 
-## 8. Reproduce Fig. 4 (Function-Class Control)
+## 8. Reproduce Fig. 4 
 
 | Panel | Experiments (`--exp`) | Table builder |
 |---|---|---|
@@ -157,7 +138,7 @@ Every verdict is cached per item (`judge_items.json`), so scores can be re-deriv
 | (b) Transfer and cost | `deploy` | `python -m ambs.extra deploy` |
 | (c) Controllability (re-weighting) | `ctrl` | `python -m ambs.extra ctrl` |
 
-## 9. Reproduce Fig. 5 (Why the Pathways Underperform, Ablations)
+## 9. Reproduce Fig. 5 
 
 | Panel | Experiments (`--exp`) | Table builder |
 |---|---|---|
@@ -171,7 +152,7 @@ Every verdict is cached per item (`judge_items.json`), so scores can be re-deriv
 | Depth under joint decoding | `mid_joint`, `depthval` | `python -m ambs.extra depth`, `python -m ambs.freeanal` (`depth_ci`, `depth_select`) |
 | Ablations and sweeps | `table6`, `figure3` | `python -m ambs.tables --exp table6`, `python -m ambs.tables --exp figure3` |
 
-## 10. Reproduce Fig. 6 (Safety, Scope, Target Quality)
+## 10. Reproduce Fig. 6 
 
 | Panel | Experiments (`--exp`) | Table builder |
 |---|---|---|
@@ -182,7 +163,7 @@ Every verdict is cached per item (`judge_items.json`), so scores can be re-deriv
 
 Capability and OOD checks: `--exp cap`, `--exp ood`, then `python -m ambs.extra capability` and `python -m ambs.extra ood`.
 
-## 11. Reproduce Table I (Multiple Judges)
+## 11. Reproduce Table I 
 
 ```bash
 for BB in llama2-7b mistral-7b gemma-7b deepseek-7b; do
@@ -191,7 +172,7 @@ done
 python -m ambs.tables --exp table4
 ```
 
-## 12. Reproduce Tables II-III (Human Audit)
+## 12. Reproduce Tables II-III 
 
 ```bash
 python -m ambs.human_eval select     # fixed 150-sample LLaMA-2-7B subset (50 per benchmark, seed 42)
@@ -200,5 +181,4 @@ python -m ambs.human_eval sheets     # blinded rater workbooks (one per rater)
 python -m ambs.human_eval agreement rater1.xlsx rater2.xlsx rater3.xlsx   # agreement, kappa, Tables II-III
 ```
 
-All result tables are written to `results/` as Markdown and CSV. To rebuild every core table at once run
-`python -m ambs.tables`, and `python -m ambs.extra new` for the analysis tables.
+All result tables are written to `results/` as Markdown and CSV. To rebuild every core table at once run `python -m ambs.tables`, and `python -m ambs.extra new` for the analysis tables.
