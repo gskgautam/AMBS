@@ -2,6 +2,8 @@
 
 ## Repository Map
 
+```
+
 AMBS/
 ├── ambs/                    # All Code (Run as `python -m ambs.<module>`)
 │   ├── common.py            # Paths, Backbones, Prompt Template, Constants
@@ -34,6 +36,8 @@ AMBS/
 ├── Datasets/                # data/ and runs/ Are Created at Run Time
 ├── requirements.txt
 └── README.md
+
+```
 
 All outputs are written under the repository root by default (`data/`, `runs/<backbone>/`, `results/`). Set `AMBS_ROOT` to use another working directory.
 
